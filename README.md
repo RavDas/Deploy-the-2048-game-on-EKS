@@ -368,7 +368,7 @@ spec:
 -- ports: Exposes port 80 on the Service and directs traffic to port 80 on the pods.
 
 
-#### Ingress (ALB Ingress Controller)
+#### Ingress (ALB Ingress Controller) - Route the traffic inside the cluster
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -404,3 +404,52 @@ spec:
 -- ingressClassName: Specifies alb as the class name for the ALB Ingress Controller.
 
 -- rules: Defines HTTP routing rules: Routes requests with path / (root path) to the service-2048 Service on port 80.
+
+
+This YAML manifest sets up a complete environment for deploying and exposing the 2048 game application in Kubernetes:
+
+**Namespace**: Provides isolation for resources related to the game application (game-2048).
+
+**Deployment**: Manages multiple replicas of the game application using Docker containers.
+
+**Service**: Exposes the game application internally within the Kubernetes cluster using NodePort.
+
+**Ingress**: Exposes the game application externally via an AWS ALB, allowing access to the application through the specified URL path.
+
+after that, you can see this kind of result;
+
+![1 12](https://github.com/user-attachments/assets/6079d01f-26ab-4655-ab9e-70e7ef7a7685)
+
+
+Subsequently, we can observe that all the pods are in a running state.
+
+```
+kubectl get pods -n game-2048
+```
+
+![1 9](https://github.com/user-attachments/assets/e1a1b176-e7ef-4dad-8f17-46ff80593e1f)
+
+Upon inspecting the service, it becomes evident that it possesses only a node IP address. Those with VPC access can communicate with this pod using the any node IP address inside the VPC and port (31565). However, external users are unable to access it.
+
+```
+kubectl get svc -n game-2048
+```
+
+![1 10](https://github.com/user-attachments/assets/a985eb9e-f5e0-43dd-a1ca-7bfc296f88d2)
+
+When reviewing the ingress resources, it’s apparent that an ingress is generated, but no address is assigned. The presence of an ingress controller is crucial. Once the ingress controller is deployed, the corresponding address will become visible.
+
+```
+kubectl get ingress -n game-2048
+```
+
+![1 11](https://github.com/user-attachments/assets/ae38a148-e790-413a-841c-49eca80b4dd6)
+
+
+However, it’s important to note that we are solely generating resources for pod deployment, service, and ingress. The presence of a controller is essential for a comprehensive understanding of these resources.
+
+Our next step involves creating an ingress controller. This controller will read the ingress resources within “ingress-2048,” configuring the entire load balancer. Within the Application Load Balancer (ALB), it will define the target group, ports, and other necessary configurations.
+
+
+![1 12](https://github.com/user-attachments/assets/aaf883e9-9eed-4979-9711-f0f05993b933)
+The running ALB controller requires access to AWS resources, necessitating integration with IAM (Identity and Access Management).
