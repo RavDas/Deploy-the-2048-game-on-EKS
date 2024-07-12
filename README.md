@@ -485,11 +485,16 @@ The output would look like this
 
 ![1 15](https://github.com/user-attachments/assets/96365c0c-8a67-479a-a2f7-339828c0429a)
 
+
 Download IAM Policy for the load balancer using CURL command. Ingress configuration requires IAM Policy for certain actions to be allowed. This policy allows multiple actions
 
+```
 https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.0/docs/install/iam_policy.json
+```
+
 Here is the code for the IAM Policy
 
+```
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -709,16 +714,18 @@ Here is the code for the IAM Policy
         }
     ]
 }
-
+```
 
 Step 11 — Create an IAM Role and Service Account. Linking this to our EKS Cluster that we created. Here we are leveraging eksctl utility.
 
+```
 eksctl create iamserviceaccount \
-    --cluster=${EKS_CLUSTER_NAME} \
+    --cluster=demo-cluster-1 \
     --namespace=kube-system \
     --name=aws-load-balancer-controller \
     --attach-policy-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
     --override-existing-serviceaccounts \
     --approve \
-    --region ${AWS_REGION}
+```
+
 The output would look like this,
