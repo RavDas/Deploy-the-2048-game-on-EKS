@@ -90,7 +90,7 @@ aws configure
 
 To get "Access Key ID" and "Seccret Access Key", log in to your AWS account and go to Security credentials.
 
-![Screenshot from 2024-07-12 23-14-47](https://github.com/user/attachments/assets/7d677895-7110-49a4-9b0a-b9f07b12be8f)
+![Screenshot from 2024-07-12 23-14-47](https://github.com/user-attachments/assets/a7aa04c9-f035-412e-9763-07ac927292f4)
 
 Then go to Access keys section and create an access key:
 
