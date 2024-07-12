@@ -172,7 +172,7 @@ Here you can see in 'Overview' details of the created cluster.
 
 ![1 05](https://github.com/user-attachments/assets/c95a9171-8b74-40d5-beba-4b96190f55f8)
 
-We can use 'Resources' tab to view what resources are generated for the newly created cluster.
+We can use 'Resources' tab to view what resources(pods, ReplicaSets, DaemonSets, Deployments, and other relevant components) are generated for the newly created cluster.
 
 ![1 2](https://github.com/user-attachments/assets/f8191d61-e9be-4067-9101-a437105b4bc3)
 
@@ -199,4 +199,208 @@ In Authentication, we can identity providers for cluster. But we are going to st
 
 You can also verify the status using console,
 
-eksctl get cluster --name eksingressdemo --region us-east-2
+```
+eksctl get cluster --name eksingressdemo --region us-east-1
+```
+
+This command retrieves the kubeconfig file. Rather than navigating through the resource tab and verifying on the AWS console, the kubectl command line can provide the same information.
+
+```
+aws eks update-kubeconfig --name test-cluster --region us-east-1
+```
+
+Next, we will create a Fargate profilewith the name “alb-sample-app.”
+
+```
+eksctl create fargateprofile \
+    --cluster eksingressdemo \
+    --region us-east-1 \
+    --name alb-sample-app \
+    --namespace game-2048
+```
+
+it creates a new Fargate profile together with the namespace "game-2048".
+
+![1 8](https://github.com/user-attachments/assets/66dcf3c8-5518-46cd-a3d4-d594f775437a)
+
+Then run the below command to apply file that contains all the configurations related deployment, service and ingress.
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/examples/2048/2048_full.yaml
+```
+
+```
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: game-2048
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: game-2048
+  name: deployment-2048
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-2048
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-2048
+    spec:
+      containers:
+      - image: public.ecr.aws/l6m2t8p7/docker-2048:latest
+        imagePullPolicy: Always
+        name: app-2048
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: game-2048
+  name: service-2048
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-2048
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: game-2048
+  name: ingress-2048
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: service-2048
+              port:
+                number: 80
+```
+
+
+Let’s break down the provided Kubernetes YAML manifest into different sections and explain each point:
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: game-2048
+```
+
+* Purpose: Creates a Kubernetes namespace named game-2048 to isolate resources related to the 2048 game application.
+
+#### Deployment
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: game-2048
+  name: deployment-2048
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-2048
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: app-2048
+    spec:
+      containers:
+        - name: app-2048
+          image: public.ecr.aws/l6m2t8p7/docker-2048:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+```
+
+* Purpose: Deploys the 2048 game application as a Kubernetes Deployment with 5 replicas.
+
+template: Defines the pod template, including the container specifications.
+
+containers: Specifies a container named app-2048 using the Docker image public.ecr.aws/l6m2t8p7/docker-2048:latest, exposing port 80 on the container.
+
+celectors: Ensures the Deployment manages pods with the label app.kubernetes.io/name: app-2048.
+
+
+#### Service (NodePort)
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: game-2048
+  name: service-2048
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-2048
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+```
+
+* Purpose: Creates a NodePort service named service-2048 to expose the Deployment internally within the cluster.
+
+type: Specifies NodePort, which exposes the Service on a randomly selected port within the cluster's NodePort range (30000-32767 by default).
+
+selector: Directs traffic to pods labeled app.kubernetes.io/name: app-2048.
+
+ports: Exposes port 80 on the Service and directs traffic to port 80 on the pods.
+
+
+#### Ingress (ALB Ingress Controller)
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: game-2048
+  name: ingress-2048
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service-2048
+                port:
+                  number: 80
+```
+
+* Purpose: Configures an Ingress resource named ingress-2048 to expose the game application externally using an AWS ALB (Application Load Balancer) through the ALB Ingress Controller.
+
+annotations: Specifies annotations for the ALB Ingress Controller:
+
+alb.ingress.kubernetes.io/scheme: internet-facing: Configures the ALB to be internet-facing.
+
+alb.ingress.kubernetes.io/target-type: ip: Specifies that the ALB should use IP addresses as targets.
+
+ingressClassName: Specifies alb as the class name for the ALB Ingress Controller.
+
+rules: Defines HTTP routing rules: Routes requests with path / (root path) to the service-2048 Service on port 80.
