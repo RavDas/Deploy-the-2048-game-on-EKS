@@ -334,11 +334,11 @@ spec:
 
 * Purpose: Deploys the 2048 game application as a Kubernetes Deployment with 5 replicas.
 
-template: Defines the pod template, including the container specifications.
+-- template: Defines the pod template, including the container specifications.
 
-containers: Specifies a container named app-2048 using the Docker image public.ecr.aws/l6m2t8p7/docker-2048:latest, exposing port 80 on the container.
+-- containers: Specifies a container named app-2048 using the Docker image public.ecr.aws/l6m2t8p7/docker-2048:latest, exposing port 80 on the container.
 
-celectors: Ensures the Deployment manages pods with the label app.kubernetes.io/name: app-2048.
+-- selector: Ensures the Deployment manages pods with the label app.kubernetes.io/name: app-2048.
 
 
 #### Service (NodePort)
@@ -361,11 +361,11 @@ spec:
 
 * Purpose: Creates a NodePort service named service-2048 to expose the Deployment internally within the cluster.
 
-type: Specifies NodePort, which exposes the Service on a randomly selected port within the cluster's NodePort range (30000-32767 by default).
+-- type: Specifies NodePort, which exposes the Service on a randomly selected port within the cluster's NodePort range (30000-32767 by default).
 
-selector: Directs traffic to pods labeled app.kubernetes.io/name: app-2048.
+-- selector: Directs traffic to pods labeled app.kubernetes.io/name: app-2048. This should be same name as in spec -> template -> label in Deployment.yml
 
-ports: Exposes port 80 on the Service and directs traffic to port 80 on the pods.
+-- ports: Exposes port 80 on the Service and directs traffic to port 80 on the pods.
 
 
 #### Ingress (ALB Ingress Controller)
@@ -395,12 +395,12 @@ spec:
 
 * Purpose: Configures an Ingress resource named ingress-2048 to expose the game application externally using an AWS ALB (Application Load Balancer) through the ALB Ingress Controller.
 
-annotations: Specifies annotations for the ALB Ingress Controller:
+-- annotations: Specifies annotations for the ALB Ingress Controller:
 
-alb.ingress.kubernetes.io/scheme: internet-facing: Configures the ALB to be internet-facing.
+-- alb.ingress.kubernetes.io/scheme: internet-facing: Configures the ALB to be internet-facing.
 
-alb.ingress.kubernetes.io/target-type: ip: Specifies that the ALB should use IP addresses as targets.
+-- alb.ingress.kubernetes.io/target-type: ip: Specifies that the ALB should use IP addresses as targets.
 
-ingressClassName: Specifies alb as the class name for the ALB Ingress Controller.
+-- ingressClassName: Specifies alb as the class name for the ALB Ingress Controller.
 
-rules: Defines HTTP routing rules: Routes requests with path / (root path) to the service-2048 Service on port 80.
+-- rules: Defines HTTP routing rules: Routes requests with path / (root path) to the service-2048 Service on port 80.
