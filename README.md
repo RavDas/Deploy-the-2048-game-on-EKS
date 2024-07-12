@@ -75,5 +75,24 @@ The prerequisites for this setup include:
 1. kubectl: A command-line tool for managing Kubernetes clusters. To install or update kubectl, refer to the official documentation.
 
 2. eksctl: A command-line tool designed for working with EKS clusters, streamlining various tasks. For installation or updates, consult the provided documentation.
-3. 
-4. AWS CLI: A command-line interface for interacting with AWS services, including Amazon EKS. To install, update, and uninstall AWS CLI, follow the instructions in the AWS Command Line Interface User Guide. After installation, it is advisable to configure the AWS CLI using the guidelines outlined in the AWS Command Line Interface User Guide under “Quick configuration with aws configure.”
+
+3. AWS CLI: A command-line interface for interacting with AWS services, including Amazon EKS. To install, update, and uninstall AWS CLI, follow the instructions in the AWS Command Line Interface User Guide. After installation, it is advisable to configure the AWS CLI using the guidelines outlined in the AWS Command Line Interface User Guide under “Quick configuration with aws configure.”
+
+Steps
+
+Initially, access your AWS Console, log in, and execute the following command:
+
+```
+aws configure
+```
+
+![image](https://github.com/user-attachments/assets/a49c91f5-dedc-4650-a6ef-e9d03ce06d2e)
+
+To get "Access Key ID" and "Seccret Access Key", log in to your AWS account and go to Security credentials.
+
+![Screenshot from 2024-07-12 23-14-47](https://github.com/user attachments/assets/7d677895-7110-49a4-9b0a-b9f07b12be8f)
+
+Then go to Access keys section and create an access key:
+
+![1 1](https://github.com/user-attachments/assets/bf8ab7a5-4a1a-4ab2-8c7a-3422df5dad1b)
+
