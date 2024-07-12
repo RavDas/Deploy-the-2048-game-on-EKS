@@ -4,7 +4,6 @@
 
 ### Kubeadm
 
-#### Overview
 Kubeadm is a toolkit for bootstrapping a minimum viable Kubernetes cluster that conforms to best practices. It is designed to be a simple, fast way to get up and running with Kubernetes.
 
 #### Key Features
@@ -19,7 +18,6 @@ Kubeadm is a toolkit for bootstrapping a minimum viable Kubernetes cluster that 
 
 ### Kops
 
-#### Overview
 Kops (Kubernetes Operations) is an open-source project that helps you create, upgrade, and maintain production-grade, highly available Kubernetes clusters from the command line.
 
 #### Key Features
@@ -34,7 +32,6 @@ Kops (Kubernetes Operations) is an open-source project that helps you create, up
 
 ### EKS (Elastic Kubernetes Service)
 
-#### Overview
 EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy lifting involved in running Kubernetes clusters, such as infrastructure management, upgrades, and scaling.
 
 #### Key Features
