@@ -1,6 +1,6 @@
 # Deploy-the-2048-game-on-EKS
 
-Certainly! Here’s a more detailed explanation of Kubeadm, Kops, and EKS:
+## Why we use EKS over Kubeadm and Kops 
 
 ### Kubeadm
 
