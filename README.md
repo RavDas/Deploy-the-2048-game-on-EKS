@@ -172,15 +172,28 @@ Here you can see in 'Overview' details of the created cluster.
 
 ![1 05](https://github.com/user-attachments/assets/c95a9171-8b74-40d5-beba-4b96190f55f8)
 
-We can use 'Resources' tab to view create resources for the cluster.
+We can use 'Resources' tab to view what resources are generated for the newly created cluster.
 
 ![1 2](https://github.com/user-attachments/assets/f8191d61-e9be-4067-9101-a437105b4bc3)
 
 ![1 3](https://github.com/user-attachments/assets/1fe61d6a-b8b5-4ae2-8893-70b9bc62c20b)
 
+Under 'Compute' tab we can see nodes create using Fargate.
 
+![1 4](https://github.com/user-attachments/assets/6a776209-8a43-4215-a939-0df904c5cae6)
 
-Now, when you go to your AWS Console, you will see the EKS and Worker Nodes created under Compute
+If we have created node using EC2 instances manually, we can view them here. In this case I have used Fargate. And we can see the Fargate profile being created and we cann only create pods in the namespace available under that profile. (default and kube-system). We will later create a new namespace for our work.
+
+![1 5](https://github.com/user-attachments/assets/d291156e-3c8f-4e9c-a596-84b6319c63d9)
+
+Networking details,
+
+![1 6](https://github.com/user-attachments/assets/f6b607d2-f28e-42e0-aae2-1b9718cd270f)
+
+In Authentication, we can identity providers for cluster. But we are going to stick with IAM users identity as it is easy to use AWS resources together with Kubernetes clusters without any disturbances rather than using third party identity providers.
+
+![1 7](https://github.com/user-attachments/assets/60beceef-b475-487f-9379-8e4d21251374)
+
 
 ![image](https://github.com/user-attachments/assets/1301de77-a085-4cba-886e-1232bca5026b)
 
