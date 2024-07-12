@@ -739,6 +739,10 @@ eksctl create iamserviceaccount \
     --override-existing-serviceaccounts \
     --approve \
 ```
+
 <Change AWS_ACCOUNT_ID to your one.>
 
-The output would look like this,
+It will create the relevant role in your AWS.
+
+![image](https://github.com/user-attachments/assets/0e5eb0f0-0e4b-441d-b782-58a64ea29c26)
+
