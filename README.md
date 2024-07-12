@@ -166,9 +166,23 @@ This will create an empty cluster, we will host the Kubernetes application on th
 
 (Will take 10-20 minutes to create a cluster.)
 
+Now go to EKS -> Clusters and click on the Cluster name
+
+Here you can see in 'Overview' details of the created cluster.
+
+![1 05](https://github.com/user-attachments/assets/c95a9171-8b74-40d5-beba-4b96190f55f8)
+
+We can use 'Resources' tab to view create resources for the cluster.
+
+![1 2](https://github.com/user-attachments/assets/f8191d61-e9be-4067-9101-a437105b4bc3)
+
+![1 3](https://github.com/user-attachments/assets/1fe61d6a-b8b5-4ae2-8893-70b9bc62c20b)
+
 
 
 Now, when you go to your AWS Console, you will see the EKS and Worker Nodes created under Compute
+
+![image](https://github.com/user-attachments/assets/1301de77-a085-4cba-886e-1232bca5026b)
 
 You can also verify the status using console,
 
