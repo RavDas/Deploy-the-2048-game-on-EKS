@@ -452,4 +452,15 @@ Our next step involves creating an ingress controller. This controller will read
 
 
 ![1 12](https://github.com/user-attachments/assets/aaf883e9-9eed-4979-9711-f0f05993b933)
-The running ALB controller requires access to AWS resources, necessitating integration with IAM (Identity and Access Management).
+
+The running ALB controller which is a Kubernetes pod,requires access to AWS resource - Application Load Balancer, necessitating integration with IAM (Identity and Access Management). For that;
+
+Create IAM OIDC provider. This is a pre requisite for this
+
+```
+eksctl utils associate-iam-oidc-provider \
+    --cluster eksingressdemo \
+    --approve
+```
+
+The output would look like this
