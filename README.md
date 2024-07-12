@@ -9,17 +9,17 @@ Kubeadm is a toolkit for bootstrapping a minimum viable Kubernetes cluster that 
 #### Key Features
 
 - **Ease of Use:** Kubeadm simplifies the process of setting up a Kubernetes cluster by handling the complex parts of the installation and configuration.
-- 
+  
 - **Control Plane Setup:** It sets up the essential components of the control plane, such as the API server, scheduler, and controller manager.
-- 
+  
 - **Node Joining:** Provides straightforward commands for adding new nodes to the cluster.
-- 
+  
 - **Configuration:** Users have the flexibility to configure networking, storage, and other cluster aspects manually, providing full control over the setup.
 
 #### Pros and Cons
 
 - **Pros:** High flexibility, full control over the cluster, ideal for custom setups.
-- 
+  
 - **Cons:** Requires manual setup and maintenance, more suited for users with Kubernetes expertise.
 
 ### Kops
@@ -29,17 +29,17 @@ Kops (Kubernetes Operations) is an open-source project that helps you create, up
 #### Key Features
 
 - **Automation:** Automates many tasks involved in cluster management, including installation, scaling, and upgrades.
-- 
+  
 - **AWS Integration:** Optimized for AWS but also supports GCE and other cloud providers to some extent.
-- 
+  
 - **Cluster Management:** Provides features for managing state, rolling updates, and managing the lifecycle of clusters.
-- 
+  
 - **Configuration:** Allows for a high degree of customization through configuration files.
 
 #### Pros and Cons
 
 - **Pros:** Good balance of automation and customization, production-ready, easier upgrades and management.
-- 
+  
 - **Cons:** Somewhat more complex than fully managed services like EKS, primarily designed for AWS.
 
 ### EKS (Elastic Kubernetes Service)
@@ -49,17 +49,17 @@ EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy 
 #### Key Features
 
 - **Managed Service:** AWS handles the availability and scalability of the Kubernetes control plane.
-- 
+  
 - **Integration with AWS Services:** Seamlessly integrates with other AWS services like IAM, VPC, CloudWatch, and more.
-- 
+  
 - **Security:** Provides built-in security features such as IAM roles for service accounts and fine-grained access control.
-- 
+  
 - **Maintenance:** AWS takes care of patching, updating, and managing the control plane components.
 
 #### Pros and Cons
 
 - **Pros:** Reduced operational overhead, high availability and scalability, deep integration with AWS services.
-- 
+  
 - **Cons:** Less control over the underlying infrastructure, potentially higher cost, dependent on AWS ecosystem.
 
 ### Detailed Comparison
@@ -724,7 +724,7 @@ aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-
 
 <Change your file path of iam_policy.json> 
 
-It will create the relevant policy in your IAM.
+It will create the relevant policy in your IAM (Go to IAM -> Policies).
 
 ![image](https://github.com/user-attachments/assets/260165c5-05a5-47f7-943a-42836e46dcdc)
 
@@ -742,7 +742,7 @@ eksctl create iamserviceaccount \
 
 <Change AWS_ACCOUNT_ID to your one.>
 
-It will create the relevant role in your AWS.
+It will create the relevant role in your AWS (Go to IAM -> Roles).
 
 ![image](https://github.com/user-attachments/assets/0e5eb0f0-0e4b-441d-b782-58a64ea29c26)
 
@@ -779,24 +779,38 @@ The output would look like this,
 kubectl get pods -n kube-system aws-load-balancer-controller
 ```
 
+The output would look like this,
+
 ![1 17](https://github.com/user-attachments/assets/2181a95b-3921-4c6f-98b4-b36d2cbb12f8)
 
 ```
 kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
 
+The output would look like this,
+
 ![1 18](https://github.com/user-attachments/assets/c0a23894-b602-4708-92e1-4515d1a1cd52)
 
-Now, we observe a configuration with 2 by 2 replicas. The load balancer controller has created a load balancer
+Now, we observe a Load Balancer gets created on AWS account. The load balancer controller has created a load balancer.
 
 ![image](https://github.com/user-attachments/assets/e70b9d73-9f4a-4940-8f88-cceb1e97fffd)
 
-Below you can see the address of the Load Balancer created by the Ingress COntroller(aws-load-balancer-controlle) watching the Ingress Resource(ingress-2048)
+Now, if you get the ingress, you can see the address,
+
+```
+kubectl get ingress -n game-2048
+```
+
+The output would look like this,
+
 ![1 19](https://github.com/user-attachments/assets/61cf6968-6bcd-4b09-a8f9-20df0b94a865)
+
+In above (in console) and below(AWS account - EC2 -> Load balancers) you can see the address of the Load Balancer created by the Ingress Controller(aws-load-balancer-controlle) watching the Ingress Resource(ingress-2048)
 
 ![1 20](https://github.com/user-attachments/assets/ff9e383e-a532-4ee1-8324-c8d166bfb562)
 
 ![1 21](https://github.com/user-attachments/assets/0fe8d7ea-efc3-4daf-8e3a-3880e88ae4e6)
+
 
 You can now fetch this URL and open this in another browser. You will see that our 2048 Game is deployed and can be accessed.
 
