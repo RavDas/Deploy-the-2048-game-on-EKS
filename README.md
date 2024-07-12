@@ -746,3 +746,65 @@ It will create the relevant role in your AWS.
 
 ![image](https://github.com/user-attachments/assets/0e5eb0f0-0e4b-441d-b782-58a64ea29c26)
 
+
+Next, to create Application Load Balancer Controller on an Amazon EKS cluster, we will use Helm chart. This Helm chart contains the controller and it will use the service account for running the pod. To deploy the Helm chart,
+
+```
+helm repo add eks https://aws.github.io/eks-charts
+```
+
+Then run to run any updates if available.
+
+```
+helm repo update
+```
+
+Configure AWS ALB (Application Load Balancer) and install to sit in front of Ingress
+
+```
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=$(your-cluster-name) \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set region=$(region) \
+  --set vpcId=$(your-vpc-id)
+```
+
+The output would look like this,
+
+![Screenshot from 2024-07-13 02-39-52](https://github.com/user-attachments/assets/5cfb1ac9-1c72-4fa6-b37c-59c6972e307e)
+
+```
+kubectl get pods -n kube-system aws-load-balancer-controller
+```
+
+![1 17](https://github.com/user-attachments/assets/2181a95b-3921-4c6f-98b4-b36d2cbb12f8)
+
+```
+kubectl get deployment -n kube-system aws-load-balancer-controller
+```
+
+![1 18](https://github.com/user-attachments/assets/c0a23894-b602-4708-92e1-4515d1a1cd52)
+
+Now, we observe a configuration with 2 by 2 replicas. The load balancer controller has created a load balancer
+
+![image](https://github.com/user-attachments/assets/e70b9d73-9f4a-4940-8f88-cceb1e97fffd)
+
+Below you can see the address of the Load Balancer created by the Ingress COntroller(aws-load-balancer-controlle) watching the Ingress Resource(ingress-2048)
+![1 19](https://github.com/user-attachments/assets/61cf6968-6bcd-4b09-a8f9-20df0b94a865)
+
+![1 20](https://github.com/user-attachments/assets/ff9e383e-a532-4ee1-8324-c8d166bfb562)
+
+![1 21](https://github.com/user-attachments/assets/0fe8d7ea-efc3-4daf-8e3a-3880e88ae4e6)
+
+You can now fetch this URL and open this in another browser. You will see that our 2048 Game is deployed and can be accessed.
+
+![1 22](https://github.com/user-attachments/assets/835e8f9f-f142-4640-8685-327f9bc0e6b3)
+
+
+Finally to delete the EKS Cluster,
+
+```
+eksctl delete cluster --name demo-cluster-1 --region us-east-1
+```
