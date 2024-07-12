@@ -7,13 +7,19 @@
 Kubeadm is a toolkit for bootstrapping a minimum viable Kubernetes cluster that conforms to best practices. It is designed to be a simple, fast way to get up and running with Kubernetes.
 
 #### Key Features
+
 - **Ease of Use:** Kubeadm simplifies the process of setting up a Kubernetes cluster by handling the complex parts of the installation and configuration.
+- 
 - **Control Plane Setup:** It sets up the essential components of the control plane, such as the API server, scheduler, and controller manager.
+- 
 - **Node Joining:** Provides straightforward commands for adding new nodes to the cluster.
+- 
 - **Configuration:** Users have the flexibility to configure networking, storage, and other cluster aspects manually, providing full control over the setup.
 
 #### Pros and Cons
+
 - **Pros:** High flexibility, full control over the cluster, ideal for custom setups.
+- 
 - **Cons:** Requires manual setup and maintenance, more suited for users with Kubernetes expertise.
 
 ### Kops
@@ -21,13 +27,19 @@ Kubeadm is a toolkit for bootstrapping a minimum viable Kubernetes cluster that 
 Kops (Kubernetes Operations) is an open-source project that helps you create, upgrade, and maintain production-grade, highly available Kubernetes clusters from the command line.
 
 #### Key Features
+
 - **Automation:** Automates many tasks involved in cluster management, including installation, scaling, and upgrades.
+- 
 - **AWS Integration:** Optimized for AWS but also supports GCE and other cloud providers to some extent.
+- 
 - **Cluster Management:** Provides features for managing state, rolling updates, and managing the lifecycle of clusters.
+- 
 - **Configuration:** Allows for a high degree of customization through configuration files.
 
 #### Pros and Cons
+
 - **Pros:** Good balance of automation and customization, production-ready, easier upgrades and management.
+- 
 - **Cons:** Somewhat more complex than fully managed services like EKS, primarily designed for AWS.
 
 ### EKS (Elastic Kubernetes Service)
@@ -35,13 +47,19 @@ Kops (Kubernetes Operations) is an open-source project that helps you create, up
 EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy lifting involved in running Kubernetes clusters, such as infrastructure management, upgrades, and scaling.
 
 #### Key Features
+
 - **Managed Service:** AWS handles the availability and scalability of the Kubernetes control plane.
+- 
 - **Integration with AWS Services:** Seamlessly integrates with other AWS services like IAM, VPC, CloudWatch, and more.
+- 
 - **Security:** Provides built-in security features such as IAM roles for service accounts and fine-grained access control.
+- 
 - **Maintenance:** AWS takes care of patching, updating, and managing the control plane components.
 
 #### Pros and Cons
+
 - **Pros:** Reduced operational overhead, high availability and scalability, deep integration with AWS services.
+- 
 - **Cons:** Less control over the underlying infrastructure, potentially higher cost, dependent on AWS ecosystem.
 
 ### Detailed Comparison
@@ -59,7 +77,9 @@ EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy 
 ### Choosing the Right Tool
 
 - **Kubeadm** is best if you want to learn Kubernetes deeply, need a custom setup, or are running on on-premises infrastructure.
+- 
 - **Kops** is a great choice for AWS users who need a production-ready solution with some level of control and automation.
+- 
 - **EKS** is ideal if you prefer a managed service, want to reduce operational complexity, and are already invested in the AWS ecosystem.
 
 
@@ -146,15 +166,13 @@ Then go to Access keys section and create an access key:
 
 Now in this step, we are going to create Amazon EKS cluster using eksctl
 
-```eksctl create cluster --name eksingressdemo --region us-east-1 --fargate```
+```eksctl create cluster --name demo-cluster-1 --region us-east-1 --fargate```
 
---name eksingressdemo: Specifies the name of the EKS cluster to be created, in this case, "eksingressdemo".
+--name demo-cluster-1: Specifies the name of the EKS cluster to be created, in this case, "demo-cluster-1".
 
 --region us-east-1: Specifies the AWS region where the EKS cluster will be created, in this case, "us-east-1".
 
 --fargate: Specifies that AWS Fargate should be used as the compute option for the EKS cluster.
-
-AWS Fargate with Amazon EKS
 
 AWS Fargate is a serverless compute engine for containers that works with both Amazon EKS and Amazon ECS. When you use Fargate, you don't need to provision or manage EC2 instances for running Kubernetes pods; instead, AWS manages the infrastructure for you.
 
@@ -162,11 +180,14 @@ Benefits of using Fargate with EKS include simplified cluster management, cost s
 
 This will create an empty cluster, we will host the Kubernetes application on this cluster and see how Ingress Service caters requests from the client.
 
-![1_6QEATFQfLzMOTB7z_k6lfQ](https://github.com/user-attachments/assets/c2d05617-0561-4dc7-aa27-93fb3af87795)
+![1 14](https://github.com/user-attachments/assets/687fcc78-36e0-4e1d-98fb-db1565ecc382)
 
 (Will take 10-20 minutes to create a cluster.)
 
+
 Now go to EKS -> Clusters and click on the Cluster name
+
+![1 13](https://github.com/user-attachments/assets/13d8dd85-fbdc-4993-8964-e14fd1c735ab)
 
 Here you can see in 'Overview' details of the created cluster.
 
@@ -194,13 +215,10 @@ In Authentication, we can identity providers for cluster. But we are going to st
 
 ![1 7](https://github.com/user-attachments/assets/60beceef-b475-487f-9379-8e4d21251374)
 
-
-![image](https://github.com/user-attachments/assets/1301de77-a085-4cba-886e-1232bca5026b)
-
 You can also verify the status using console,
 
 ```
-eksctl get cluster --name eksingressdemo --region us-east-1
+eksctl get cluster --name demo-cluster-1 --region us-east-1
 ```
 
 This command retrieves the kubeconfig file. Rather than navigating through the resource tab and verifying on the AWS console, the kubectl command line can provide the same information.
@@ -213,7 +231,7 @@ Next, we will create a Fargate profilewith the name “alb-sample-app.”
 
 ```
 eksctl create fargateprofile \
-    --cluster eksingressdemo \
+    --cluster demo-cluster-1 \
     --region us-east-1 \
     --name alb-sample-app \
     --namespace game-2048
@@ -459,8 +477,11 @@ Create IAM OIDC provider. This is a pre requisite for this
 
 ```
 eksctl utils associate-iam-oidc-provider \
-    --cluster eksingressdemo \
+    --cluster demo-cluster-1 \
     --approve
 ```
 
 The output would look like this
+
+![1 15](https://github.com/user-attachments/assets/96365c0c-8a67-479a-a2f7-339828c0429a)
+
