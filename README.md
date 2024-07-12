@@ -112,6 +112,7 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 ```
 
 You can check the eksctl version using
+
 ```
 eksctl version
 ```
@@ -140,3 +141,35 @@ Then go to Access keys section and create an access key:
 
 ![1 1](https://github.com/user-attachments/assets/bf8ab7a5-4a1a-4ab2-8c7a-3422df5dad1b)
 
+
+### Create an EKS Cluster using EKSCTL
+
+Now in this step, we are going to create Amazon EKS cluster using eksctl
+
+```eksctl create cluster --name eksingressdemo --region us-east-1 --fargate```
+
+--name eksingressdemo: Specifies the name of the EKS cluster to be created, in this case, "eksingressdemo".
+
+--region us-east-1: Specifies the AWS region where the EKS cluster will be created, in this case, "us-east-1".
+
+--fargate: Specifies that AWS Fargate should be used as the compute option for the EKS cluster.
+
+AWS Fargate with Amazon EKS
+
+AWS Fargate is a serverless compute engine for containers that works with both Amazon EKS and Amazon ECS. When you use Fargate, you don't need to provision or manage EC2 instances for running Kubernetes pods; instead, AWS manages the infrastructure for you.
+
+Benefits of using Fargate with EKS include simplified cluster management, cost savings by paying only for the resources used by your pods, and improved scalability without worrying about underlying EC2 instances.
+
+This will create an empty cluster, we will host the Kubernetes application on this cluster and see how Ingress Service caters requests from the client.
+
+![1_6QEATFQfLzMOTB7z_k6lfQ](https://github.com/user-attachments/assets/c2d05617-0561-4dc7-aa27-93fb3af87795)
+
+(Will take 10-20 minutes to create a cluster.)
+
+
+
+Now, when you go to your AWS Console, you will see the EKS and Worker Nodes created under Compute
+
+You can also verify the status using console,
+
+eksctl get cluster --name eksingressdemo --region us-east-2
