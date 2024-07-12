@@ -77,9 +77,9 @@ EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy 
 ### Choosing the Right Tool
 
 - **Kubeadm** is best if you want to learn Kubernetes deeply, need a custom setup, or are running on on-premises infrastructure.
-- 
+  
 - **Kops** is a great choice for AWS users who need a production-ready solution with some level of control and automation.
-- 
+  
 - **EKS** is ideal if you prefer a managed service, want to reduce operational complexity, and are already invested in the AWS ecosystem.
 
 
