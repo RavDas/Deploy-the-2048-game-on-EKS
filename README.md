@@ -62,13 +62,18 @@ EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy 
 - **Kops** is a great choice for AWS users who need a production-ready solution with some level of control and automation.
 - **EKS** is ideal if you prefer a managed service, want to reduce operational complexity, and are already invested in the AWS ecosystem.
 
-Let me know if you need more details or have specific questions about any of these tools!
-Master node down
-Certification expired
-API server is down
-ETCD crashed
-Scheduler is not working
+
+![image](https://github.com/user-attachments/assets/0f2978dd-f2e8-46b8-93f1-d79036357d29)
+
 
 EKS is a highly managed controlled plane but it is not managed data plane. It will give a higly available Kubernetes cluster with regard to the control plane.
 
-TO attach worker nodes we can cretae EC2 instances or can use Forgate (AWS Serverless Compute that allows to run containers)
+To attach worker nodes we can create EC2 instances (we have to take care of high availablitiy of instances) or can use Fargate (AWS Serverless Compute that allows to run containers)
+
+The prerequisites for this setup include:
+
+1. kubectl: A command-line tool for managing Kubernetes clusters. To install or update kubectl, refer to the official documentation.
+
+2. eksctl: A command-line tool designed for working with EKS clusters, streamlining various tasks. For installation or updates, consult the provided documentation.
+3. 
+4. AWS CLI: A command-line interface for interacting with AWS services, including Amazon EKS. To install, update, and uninstall AWS CLI, follow the instructions in the AWS Command Line Interface User Guide. After installation, it is advisable to configure the AWS CLI using the guidelines outlined in the AWS Command Line Interface User Guide under “Quick configuration with aws configure.”
