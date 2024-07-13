@@ -495,7 +495,7 @@ kubectl get pods -n game-2048
 
 ![1 9](https://github.com/user-attachments/assets/e1a1b176-e7ef-4dad-8f17-46ff80593e1f)
 
-Upon inspecting the service, it becomes evident that it possesses only a node IP address. Those with VPC access can communicate with this pod using the any node IP address inside the VPC and port (31565). However, external users are unable to access it.
+Upon inspecting the service, it becomes evident that it possesses only a node IP address. Those within the VPC can communicate with this pod using the any node IP address inside the VPC and port (31565). However, external users are unable to access it.
 
 ```
 kubectl get svc -n game-2048
@@ -503,7 +503,7 @@ kubectl get svc -n game-2048
 
 ![1 10](https://github.com/user-attachments/assets/a985eb9e-f5e0-43dd-a1ca-7bfc296f88d2)
 
-When reviewing the ingress resources, it’s apparent that an ingress is generated, but no address is assigned. The presence of an ingress controller is crucial. Once the ingress controller is deployed, the corresponding address will become visible.
+When reviewing the ingress resources, it’s apparent that an ingress is generated, but no address is assigned. The presence of an ingress controller is crucial. Once the ingress controller is deployed, the corresponding address will become visible. 
 
 ```
 kubectl get ingress -n game-2048
@@ -511,16 +511,19 @@ kubectl get ingress -n game-2048
 
 ![1 11](https://github.com/user-attachments/assets/ae38a148-e790-413a-841c-49eca80b4dd6)
 
+This YAML manifest sets up a deployment with five replicas, a NodePort service exposing port 80, and an Ingress resource with AWS ALB-specific annotations to route external traffic to the service.
+
+after that, you can see this kind of result,
+
+![1 12](https://github.com/user-attachments/assets/aaf883e9-9eed-4979-9711-f0f05993b933)
+
 
 However, it’s important to note that we are solely generating resources for pod deployment, service, and ingress. The presence of a controller is essential for a comprehensive understanding of these resources.
 
 Our next step involves creating an ingress controller. This controller will read the ingress resources within “ingress-2048,” configuring the entire load balancer. Within the Application Load Balancer (ALB), it will define the target group, ports, and other necessary configurations.
 
-![1 12](https://github.com/user-attachments/assets/aaf883e9-9eed-4979-9711-f0f05993b933)
 
-
-
-The running ALB controller which is a Kubernetes pod,requires access to AWS resource - Application Load Balancer, necessitating integration with IAM (Identity and Access Management). For that;
+The running Ingress Controller / ALB controller which is a Kubernetes pod, requires access to AWS resource - Application Load Balancer, necessitating integration with IAM (Identity and Access Management). For that;
 
 ### Create IAM OIDC provider.
 
@@ -543,7 +546,7 @@ The output would look like this
 Download IAM Policy for the load balancer using CURL command. Ingress configuration requires IAM Policy for certain actions to be allowed. This policy allows multiple actions.
 
 ```
-https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.0/docs/install/iam_policy.json
+curl "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.0/docs/install/iam_policy.json"
 ```
 
 Here is the code for the IAM Policy,
@@ -805,9 +808,11 @@ It will create the relevant role in your AWS (Go to IAM -> Roles).
 ![image](https://github.com/user-attachments/assets/0e5eb0f0-0e4b-441d-b782-58a64ea29c26)
 
 
-### Deploy the Helm chart
+### Deploy Helm Chart
 
-Next, to create Application Load Balancer Controller on an Amazon EKS cluster, we will use Helm chart. This Helm chart contains the controller and it will use the service account for running the pod. To deploy the Helm chart,
+Next, to create Application Load Balancer Controller on an Amazon EKS cluster, we will use Helm Chart. This Helm Chart contains the controller and it will use the service account for running the pod. Helm is a package manager for Kubernetes, an open-source container orchestration platform. Helm helps you manage Kubernetes applications by making it easy to install, update, and delete them. 
+
+To deploy the Helm Chart,
 
 ```
 helm repo add eks https://aws.github.io/eks-charts
