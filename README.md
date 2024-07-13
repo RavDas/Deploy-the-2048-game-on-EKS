@@ -101,19 +101,14 @@ Now let,s get to Deployment!!
 2. Install and setup kubectl (prerequisite)
 3. Install AWS CLI and Configure AWS CLI (prerequisite)
 4. Create an EKS Cluster using EKSCTL
+5. Deploy the 2048 game application
+6. Create IAM OIDC provider
+7. Download and Create IAM Policy for Load Balancer
+8. Create a IAM Role and Service Account
+9. Deploy the Helm chart
+10. Configure AWS ALB (Application Load Balancer)
+11. Delete EKS Cluster
 
-5. Install Helm Chart
-8. Set up IAM Role for Service Accounts
-9. Create IAM OIDC provider
-10. Download IAM Policy for the load balancer using CURL command
-11. Create a IAM Service Account
-12. Deploy the Helm chart
-13. Configure AWS ALB (Application Load Balancer) to sit in front of Ingress
-14. Verify that AWS Load Balancer is installed
-15. Deploy Sample Application
-16. Verify Ingress
-17. Get Ingress URL and check EKS Pod Data
-17.0 Delete EKS cluster
     
 ### 1. Prerequisites for this setup include:
 
@@ -253,7 +248,7 @@ Networking details,
 
 ![1 6](https://github.com/user-attachments/assets/f6b607d2-f28e-42e0-aae2-1b9718cd270f)
 
-In Authentication, we can identity providers for cluster. But we are going to stick with IAM users identity as it is easy to use AWS resources together with Kubernetes clusters without any disturbances rather than using third party identity providers.
+In Authentication, we can identity providers for cluster. But we are going to stick with IAM (Identity and Access Management) users identity as it is easy to use AWS resources together with Kubernetes clusters without any disturbances rather than using third party identity providers.
 
 ![1 7](https://github.com/user-attachments/assets/60beceef-b475-487f-9379-8e4d21251374)
 
@@ -266,7 +261,7 @@ eksctl get cluster --name demo-cluster-1 --region us-east-1
 This command retrieves the kubeconfig file. Rather than navigating through the resource tab and verifying on the AWS console, the kubectl command line can provide the same information.
 
 ```
-aws eks update-kubeconfig --name test-cluster --region us-east-1
+aws eks update-kubeconfig --name demo-cluster-1 --region us-east-1
 ```
 
 Next, we will create a Fargate profilewith the name “alb-sample-app.”
@@ -278,6 +273,11 @@ eksctl create fargateprofile \
     --name alb-sample-app \
     --namespace game-2048
 ```
+
+The output would look like this,
+
+![1 23](https://github.com/user-attachments/assets/fa7ed0ac-2bd3-4845-9456-003f17dc8782)
+
 
 it creates a new Fargate profile together with the namespace "game-2048".
 
@@ -525,7 +525,7 @@ Our next step involves creating an ingress controller. This controller will read
 
 The running Ingress Controller / ALB controller which is a Kubernetes pod, requires access to AWS resource - Application Load Balancer, necessitating integration with IAM (Identity and Access Management). For that;
 
-### Create IAM OIDC provider.
+### Create IAM OIDC (OpenID Connect) provider.
 
 This is a pre requisite for this
 
@@ -535,7 +535,7 @@ eksctl utils associate-iam-oidc-provider \
     --approve
 ```
 
-The output would look like this
+The output would look like this,
 
 ![1 15](https://github.com/user-attachments/assets/96365c0c-8a67-479a-a2f7-339828c0429a)
 
@@ -798,10 +798,14 @@ eksctl create iamserviceaccount \
     --name=aws-load-balancer-controller \
     --attach-policy-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
     --override-existing-serviceaccounts \
-    --approve \
+    --approve 
 ```
+<Change 'AWS_ACCOUNT_ID' to your one>
 
-<Change 'AWS_ACCOUNT_ID' to your one.>
+
+The output would look like this,
+
+![1 24](https://github.com/user-attachments/assets/6d905890-b029-4de6-a2a5-f7a32d054267)
 
 It will create the relevant role in your AWS (Go to IAM -> Roles).
 
@@ -858,15 +862,15 @@ The output would look like this,
 kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
 
-The output would look like this,
+The output would look like this, (It will creates two replicas in each availability zone,  will continuosly watch for ingress resources and it will create ALB resources in two availability zones.)
 
 ![1 18](https://github.com/user-attachments/assets/c0a23894-b602-4708-92e1-4515d1a1cd52)
 
-Now, we observe a Load Balancer gets created on AWS account. The load balancer controller has created a load balancer.
+Now, we observe a Load Balancer gets created on AWS account. The Load Balancer Controller has created a Load Balancer via submitted Ingress Resource.
 
 ![image](https://github.com/user-attachments/assets/e70b9d73-9f4a-4940-8f88-cceb1e97fffd)
 
-Now, if you get the ingress, you can see the address,
+Now, if you get the Ingress, you can see the address,
 
 ```
 kubectl get ingress -n game-2048
@@ -887,6 +891,8 @@ You can now fetch this URL and open this in another browser. You will see that o
 
 ![1 22](https://github.com/user-attachments/assets/835e8f9f-f142-4640-8685-327f9bc0e6b3)
 
+
+### Delete EKS cluster
 
 Finally to delete the EKS Cluster,
 
