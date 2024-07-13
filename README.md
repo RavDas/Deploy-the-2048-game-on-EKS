@@ -1,6 +1,6 @@
-# Deploy-the-2048-game-on-EKS
+# Deploy the 2048 game on EKS Cluster using Ingress
 
-## Why we use EKS over Kubeadm and Kops 
+## 1. Why we use EKS over Kubeadm and Kops 
 
 ### Kubeadm
 
@@ -82,15 +82,40 @@ EKS is a managed Kubernetes service provided by AWS. It takes care of the heavy 
   
 - **EKS** is ideal if you prefer a managed service, want to reduce operational complexity, and are already invested in the AWS ecosystem.
 
+EKS is a highly managed controlled plane but it is not managed data plane. It will give a higly available Kubernetes cluster with regard to the control plane.
+
+
+## 2. What is Kubernetes Ingress
+
+Kubernetes Ingress is an API object that provides routing rules to manage external user`s access to the services in a Kubernetes cluster, typically via HTTPS/HTTP.
 
 ![image](https://github.com/user-attachments/assets/0f2978dd-f2e8-46b8-93f1-d79036357d29)
 
 
-EKS is a highly managed controlled plane but it is not managed data plane. It will give a higly available Kubernetes cluster with regard to the control plane.
+Now let,s get to Deployment!!
 
-To attach worker nodes we can create EC2 instances (we have to take care of high availablitiy of instances) or can use Fargate (AWS Serverless Compute that allows to run containers)
 
-The prerequisites for this setup include:
+### Steps required:-
+
+1. Install and set up eksctl (prerequisite)
+2. Install and setup kubectl (prerequisite)
+3. Install AWS CLI and Configure AWS CLI (prerequisite)
+4. Create an EKS Cluster using EKSCTL
+
+5. Install Helm Chart
+8. Set up IAM Role for Service Accounts
+9. Create IAM OIDC provider
+10. Download IAM Policy for the load balancer using CURL command
+11. Create a IAM Service Account
+12. Deploy the Helm chart
+13. Configure AWS ALB (Application Load Balancer) to sit in front of Ingress
+14. Verify that AWS Load Balancer is installed
+15. Deploy Sample Application
+16. Verify Ingress
+17. Get Ingress URL and check EKS Pod Data
+17.0 Delete EKS cluster
+    
+### 1. Prerequisites for this setup include:
 
 1. kubectl: A command-line tool for managing Kubernetes clusters. It allows users to deploy, inspect, and manage Kubernetes resources such as pods, deployments, services, and more. Kubectl enables users to perform operations such as creating, updating, deleting, and scaling Kubernetes resources.
 
@@ -99,6 +124,8 @@ Run the following steps to install kubectl on your local machine / VM(EC2 instan
 ```
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 ```
+
+Use [official documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) for kubectl installation on other OS
 
 
 Add execute permission to the binary:
@@ -128,7 +155,9 @@ Install and set up eksctl
 Download and extract the latest release of eksctl with the following command.
 
 ```
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && sudo mv /tmp/eksctl /usr/local/bin
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp &&
+
+sudo mv /tmp/eksctl /usr/local/bin
 ```
 
 You can check the eksctl version using
@@ -137,11 +166,24 @@ You can check the eksctl version using
 eksctl version
 ```
 
+Use [official documentation](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eksctl.html) for eksctl installation on other OS
+
 The output would look like this
 
 ![image](https://github.com/user-attachments/assets/ea963b1c-4c7d-407a-b300-b930a44be52f)
 
 3. AWS CLI: A command-line interface for interacting with AWS services, including Amazon EKS. To install, update, and uninstall AWS CLI, follow the instructions in the AWS Command Line Interface User Guide. After installation, it is advisable to configure the AWS CLI using the guidelines outlined in the AWS Command Line Interface User Guide under “Quick configuration with aws configure.”
+
+To install the AWS CLI, run the following commands.
+
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" unzip awscliv2.zip
+
+sudo ./aws/install
+```
+
+Use [official documentation]([https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eksctl.html) for eksctl installation on other OS
+
 
 Steps
 
@@ -162,7 +204,7 @@ Then go to Access keys section and create an access key:
 ![1 1](https://github.com/user-attachments/assets/bf8ab7a5-4a1a-4ab2-8c7a-3422df5dad1b)
 
 
-### Create an EKS Cluster using EKSCTL
+### 2. Create an EKS Cluster using EKSCTL
 
 Now in this step, we are going to create Amazon EKS cluster using eksctl
 
@@ -241,11 +283,16 @@ it creates a new Fargate profile together with the namespace "game-2048".
 
 ![1 8](https://github.com/user-attachments/assets/66dcf3c8-5518-46cd-a3d4-d594f775437a)
 
+
+### 3. Deploy the 2048 game application
+
 Then run the below command to apply file that contains all the configurations related deployment, service and ingress.
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/examples/2048/2048_full.yaml
 ```
+
+Here is the YAML Code for the application.
 
 ```
 ---
@@ -312,6 +359,7 @@ spec:
                 number: 80
 ```
 
+Here, we have created a namespace, deployment, service and ingress. Kindly pay attention to the annotations on Ingress.
 
 Let’s break down the provided Kubernetes YAML manifest into different sections and explain each point:
 
@@ -468,12 +516,15 @@ However, it’s important to note that we are solely generating resources for po
 
 Our next step involves creating an ingress controller. This controller will read the ingress resources within “ingress-2048,” configuring the entire load balancer. Within the Application Load Balancer (ALB), it will define the target group, ports, and other necessary configurations.
 
-
 ![1 12](https://github.com/user-attachments/assets/aaf883e9-9eed-4979-9711-f0f05993b933)
+
+
 
 The running ALB controller which is a Kubernetes pod,requires access to AWS resource - Application Load Balancer, necessitating integration with IAM (Identity and Access Management). For that;
 
-Create IAM OIDC provider. This is a pre requisite for this
+### Create IAM OIDC provider.
+
+This is a pre requisite for this
 
 ```
 eksctl utils associate-iam-oidc-provider \
@@ -486,13 +537,16 @@ The output would look like this
 ![1 15](https://github.com/user-attachments/assets/96365c0c-8a67-479a-a2f7-339828c0429a)
 
 
+### Download and Create IAM Policy
+
+
 Download IAM Policy for the load balancer using CURL command. Ingress configuration requires IAM Policy for certain actions to be allowed. This policy allows multiple actions.
 
 ```
 https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.0/docs/install/iam_policy.json
 ```
 
-Here is the code for the IAM Policy
+Here is the code for the IAM Policy,
 
 ```
 {
@@ -722,11 +776,15 @@ Create a policy in IAM Policies with the below command.
 aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://${your file path}/iam_policy.json
 ```
 
-<Change your file path of iam_policy.json> 
+<Change 'your file path' of iam_policy.json> 
 
 It will create the relevant policy in your IAM (Go to IAM -> Policies).
 
 ![image](https://github.com/user-attachments/assets/260165c5-05a5-47f7-943a-42836e46dcdc)
+
+
+### Create a IAM Role and Service Account
+
 
 Create an IAM Role and Service Account. Linking this to our EKS Cluster that we created. Here we are leveraging eksctl utility.
 
@@ -740,12 +798,14 @@ eksctl create iamserviceaccount \
     --approve \
 ```
 
-<Change AWS_ACCOUNT_ID to your one.>
+<Change 'AWS_ACCOUNT_ID' to your one.>
 
 It will create the relevant role in your AWS (Go to IAM -> Roles).
 
 ![image](https://github.com/user-attachments/assets/0e5eb0f0-0e4b-441d-b782-58a64ea29c26)
 
+
+### Deploy the Helm chart
 
 Next, to create Application Load Balancer Controller on an Amazon EKS cluster, we will use Helm chart. This Helm chart contains the controller and it will use the service account for running the pod. To deploy the Helm chart,
 
@@ -759,7 +819,10 @@ Then run to run any updates if available.
 helm repo update
 ```
 
-Configure AWS ALB (Application Load Balancer) and install to sit in front of Ingress
+### Configure AWS ALB (Application Load Balancer) 
+
+
+Configure AWS ALB (Application Load Balancer) and install to sit in front of Ingress.
 
 ```
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
@@ -774,6 +837,9 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 The output would look like this,
 
 ![Screenshot from 2024-07-13 02-39-52](https://github.com/user-attachments/assets/5cfb1ac9-1c72-4fa6-b37c-59c6972e307e)
+
+
+To verify that AWS Load Balancer is installed;
 
 ```
 kubectl get pods -n kube-system aws-load-balancer-controller
