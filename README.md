@@ -145,9 +145,7 @@ The output would look like this
 
 2. eksctl: A command-line tool designed for working with EKS clusters, streamlining various tasks. The eksctl tool uses CloudFormation under the hood, creating one stack for the EKS master control plane and another stack for the worker nodes.
 
-Install and set up eksctl
-
-Download and extract the latest release of eksctl with the following command.
+Install and set up eksctl - Download and extract the latest release of eksctl with the following command.
 
 ```
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp &&
