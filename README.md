@@ -899,3 +899,12 @@ Finally to delete the EKS Cluster,
 ```
 eksctl delete cluster --name demo-cluster-1 --region us-east-1
 ```
+
+And to delete the Fargate profile,
+
+```
+# eksctl delete fargateprofile  --name <my-profile> --cluster <my-cluster>
+
+eksctl delete fargateprofile  --name alb-smaple-app --cluster demo-cluster-1
+
+```
